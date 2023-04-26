@@ -25,7 +25,6 @@ export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({ addressTo: "", amount: "", propertyID: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
-  const[ownedBootles, setOwnedBottles] = useState([]);
 
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value })); 
@@ -47,12 +46,12 @@ export const TransactionsProvider = ({ children }) => {
         }));
 
         console.log(structuredTransactions);
-
-        // setTransactions(structuredTransactions);
       } else {
         console.log("Ethereum is not present");
+        alert("Error getting transactions");
       }
     } catch (error) {
+      alert("Error getting transactions");
       console.log(error);
     }
   };
@@ -63,6 +62,7 @@ export const TransactionsProvider = ({ children }) => {
       const result = await transactionContract.getPropertyDetails(propertyId);
       return result;
     } catch (error) {
+      alert("Property not found");
       console.error('Error in getting property details:', error);
       throw error;
     }
@@ -144,7 +144,8 @@ export const TransactionsProvider = ({ children }) => {
 
       const { addressTo, amount, propertyID } = formData;
       const transactionContract = createEthereumContract(); 
-      const parsedAmount = ethers.utils.parseEther(amount);
+      const parsedAmount = ethers.BigNumber.from(amount);
+
 
       await ethereum.request({
         method: 'eth_sendTransaction',
@@ -178,31 +179,27 @@ export const TransactionsProvider = ({ children }) => {
       throw new Error("Error sending transaction");
     }
   };
-
-  const getUserBottles = async() => {
+  const getUserBottles = async () => {
     if (!currentAccount) return;
 
-    try{
+    try {
       const transactionsContract = createEthereumContract();
       const ownedBottles = await transactionsContract.getUserBottles(
         currentAccount
       );
       setOwnedBottles(ownedBottles);
-
-    }catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
-
   
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
   return (
-    <TransactionContext.Provider value={{ getPropertyDetails, createProperty, connectWallet, currentAccount, formData, setFormData, sendTransaction, handleChange, isLoading, isLoading2,ownedBootles,getUserBottles }}>
+    <TransactionContext.Provider value={{ getPropertyDetails, createProperty, connectWallet, currentAccount, formData, setFormData, sendTransaction, handleChange, isLoading, isLoading2 }}>
       {children}
     </TransactionContext.Provider>
   );
 };
- 

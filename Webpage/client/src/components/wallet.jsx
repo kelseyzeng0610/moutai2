@@ -1,8 +1,8 @@
 import React from "react";
-import '../WalletModal.css';
+import "./wallet.css";
 import {useState,useEffect,useContext} from 'react';
-import Web3 from 'web3';
 import{TransactionContext} from '../context/TransactionContext';
+import WalletList from "./WalletList";
 
 
 
@@ -30,15 +30,22 @@ const Wallet = ({ avatarSrc, bottleCount }) => {
   console.log('Owned Bottles:', ownedBottles); 
   
   return (
-    <div className = "wallet-container">
-      <img src={avatarSrc} alt="Avatar" className = "avatar" />
+    <div className="wallet-page bg-gray-50 h-full">
+      <div className="wallet-container bg-white shadow-md rounded-md p-6 h-full">
+        <img
+          src={avatarSrc}
+          alt="Avatar"
+          className="avatar w-24 h-24 rounded-full mx-auto mb-6"
+        />
 
-      <div className="owned-bottles">
-      <h3>Owned Bottles:</h3>
-     
-      
-    </div>
+        <div className="current-account">
+          <h3 className="text-xl font-semibold mb-4">Current Account:</h3>
+          <p>{currentAccount}</p>
+        </div>
 
+        <WalletList ownedBottles={ownedBottles} />
+
+      </div>
     </div>
   );
 };
