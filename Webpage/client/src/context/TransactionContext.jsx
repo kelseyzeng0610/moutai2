@@ -25,6 +25,7 @@ export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({ addressTo: "", amount: "", propertyID: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
+  const[ownedBootles, setOwnedBottles] = useState([]);
 
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value })); 
@@ -177,13 +178,29 @@ export const TransactionsProvider = ({ children }) => {
       throw new Error("Error sending transaction");
     }
   };
+
+  const getUserBottles = async() => {
+    if (!currentAccount) return;
+
+    try{
+      const transactionsContract = createEthereumContract();
+      const ownedBottles = await transactionsContract.getUserBottles(
+        currentAccount
+      );
+      setOwnedBottles(ownedBottles);
+
+    }catch (error) {
+      console.log(error);
+    }
+  };
+
   
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
   return (
-    <TransactionContext.Provider value={{ getPropertyDetails, createProperty, connectWallet, currentAccount, formData, setFormData, sendTransaction, handleChange, isLoading, isLoading2 }}>
+    <TransactionContext.Provider value={{ getPropertyDetails, createProperty, connectWallet, currentAccount, formData, setFormData, sendTransaction, handleChange, isLoading, isLoading2,ownedBootles,getUserBottles }}>
       {children}
     </TransactionContext.Provider>
   );
