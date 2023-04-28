@@ -29,6 +29,7 @@ contract Transactions {
     TransferStruct[] transactions;
     Property[] properties;
     mapping (address => Role) public userRoles;
+    mapping (uint256 => address) public pendingOwner;
 
     constructor() {
         address creatorAdmin = msg.sender;
@@ -96,4 +97,43 @@ contract Transactions {
     function getPropertyCount() public view returns (uint256) {
         return propertyCount;
     }
+
+   function getOwnedBottles(address owner) public view returns (uint256[] memory) {
+    uint256[] memory ownedBottles = new uint256[](propertyCount);
+    uint256 ownedBottleCount = 0;
+
+    for (uint256 i = 1; i < properties.length; i++) {
+        if (properties[i].currOwner == owner) {
+            ownedBottles[ownedBottleCount] = properties[i].propId;
+            ownedBottleCount++;
+        }
+    }
+
+    // Resize the array to match the actual number of owned bottles
+    uint256[] memory result = new uint256[](ownedBottleCount);
+    for (uint256 i = 0; i < ownedBottleCount; i++) {
+        result[i] = ownedBottles[i];
+    }
+
+    return result;
+}
+
+function changeValue(uint256 _propId, uint256 _newValue) public returns (bool){
+    uint index = findIndex(_propId);
+    require (index != 0, "Property does not exist");
+    require(properties[index].currOwner == msg.sender, "Only the owner can change the value");
+    properties[index].value = _newValue;
+    return true;
+}
+
+ function initOwnershipTransfer(uint256 propertyId, address currentOwner, address newOwner) public {
+        require(properties[propertyId].currOwner == currentOwner, "Only the owner can initiate the ownership transfer.");
+        require(newOwner != address(0), "New owner cannot be the zero address.");
+        require(currentOwner != address(0), "Current owner cannot be the zero address.");
+        require(msg.sender == currentOwner, "Only the current owner can call this function.");
+        pendingOwner[propertyId] = newOwner;
+
+    }
+
+
 }

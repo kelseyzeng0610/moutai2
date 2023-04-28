@@ -2,13 +2,18 @@ import "./wallet.css";
 import React from "react";
 import {useState} from 'react';
 import TransferPage from './TransferPage';
+import ChangeValuePage from './ChangeValuePage';
 
 const WalletItem = ({ propId, value }) => {
     const[showTransferPage, setShowTransferPage] = useState(false);
-    
+    const[showChangeValuePage, setShowChangeValuePage] = useState(false);
+
 const handleTransferClick = () => {
         setShowTransferPage(true);
 };
+const handleChangeValue =() =>{
+        setShowChangeValuePage(true);
+}
 
   return (
     <div className="flex items-center justify-between py-4 border-b border-gray-200">
@@ -25,10 +30,12 @@ const handleTransferClick = () => {
         <p className="font-semibold text-sm text-gray-600">{value} ETH</p>
         <div className="flex space-x-2 mt-2">
           <button className="bg-green-500 text-white py-1 px-2 rounded font-semibold text-xs"onClick={handleTransferClick}>Transfer</button>
-          <button className="bg-blue-500 text-white py-1 px-2 rounded font-semibold text-xs">Change Value</button>
+          <button className="bg-blue-500 text-white py-1 px-2 rounded font-semibold text-xs"onClick = {handleChangeValue}>Change Value</button>
         </div>
       </div>
       {showTransferPage && <TransferPage setShowTransferPage={setShowTransferPage} />}
+      {showChangeValuePage && <ChangeValuePage setShowChangeValuePage={setShowChangeValuePage} />}
+
     </div>
   );
 };
